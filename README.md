@@ -1,7 +1,7 @@
 # NER Landslide Early Warning System (EWS)
 
 > AI-based Landslide Early Warning and Risk Monitoring System for Northeast India.  
-> **Current status: Phase 0 — Infrastructure Shell**
+> **Current status: Phase 1 — GIS Foundation**
 
 ---
 
@@ -22,7 +22,7 @@
 | Tool | Minimum Version | Purpose |
 |---|---|---|
 | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | 24+ | PostgreSQL/PostGIS container |
-| [Python](https://python.org) | 3.11 | Backend (FastAPI) |
+| [Python](https://python.org) | 3.11 | Backend (FastAPI) & Ingestion scripts |
 | [Node.js](https://nodejs.org) | 18+ | Frontend (Vite/React) |
 | [npm](https://npmjs.com) | 9+ | Frontend package manager |
 
@@ -74,7 +74,14 @@ Wait for the health check to pass (≈15 seconds):
 docker compose ps   # db should show "healthy"
 ```
 
-### 3. Start the Backend
+### 3. Load GIS Data (Phase 1)
+Follow the [Phase 1 GIS Layer Documentation](docs/phase1_gis_layer.md) to download the NASA GLC dataset and run the ingest script:
+```bash
+pip install -r ingestion/requirements.txt
+python ingestion/import_nasa_glc.py
+```
+
+### 4. Start the Backend
 
 ```bash
 cd backend
@@ -84,7 +91,7 @@ uvicorn app.main:app --reload --port 8000
 
 Verify: `http://localhost:8000/api/v1/health` should return HTTP 200.
 
-### 4. Start the Frontend
+### 5. Start the Frontend
 
 Open a new terminal:
 
@@ -100,7 +107,7 @@ Open: **http://localhost:5173**
 
 ## Running Each Service
 
-### PostgreSQL / PostGIS only (recommended for Phase 0)
+### PostgreSQL / PostGIS only
 
 ```bash
 docker compose up db -d
@@ -162,6 +169,8 @@ Copy `.env.example` → `.env` and configure:
 |---|---|---|
 | `GET` | `/` | Service info + navigation links |
 | `GET` | `/api/v1/health` | Backend health status |
+| `GET` | `/api/v1/gis/layers` | List available GIS layers |
+| `GET` | `/api/v1/gis/layers/{layer_id}` | GeoJSON FeatureCollection for a layer |
 | `GET` | `/docs` | Swagger UI |
 | `GET` | `/redoc` | ReDoc UI |
 
@@ -172,8 +181,9 @@ Copy `.env.example` → `.env` and configure:
 | Phase | Description | Status |
 |---|---|---|
 | **0** | Repository scaffold, PostGIS, FastAPI shell, MapLibre map | ✅ Complete |
-| **1** | GIS susceptibility layers, rainfall/soil-moisture ingestion | 🔜 Next |
-| **2** | Field reporting API + PWA, alert log | Planned |
+| **1** | GIS foundation, NASA GLC historical event inventory layer | ✅ Complete |
+| **2** | Live rainfall/soil-moisture ingestion, field reporting API | 🔜 Next |
 | **3** | ML susceptibility model (XGBoost + SHAP), risk scoring | Planned |
 | **4** | Alert delivery (email / SMS / webhook) | Planned |
 | **5** | Authentication, RBAC, production hardening | Planned |
+

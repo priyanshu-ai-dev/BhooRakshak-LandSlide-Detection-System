@@ -40,7 +40,10 @@ app = FastAPI(
     version=settings.app_version,
     description=(
         "AI-based Landslide Early Warning and Risk Monitoring System "
-        "for Northeast India (NER). Phase 0 — infrastructure shell."
+        "for Northeast India (NER). Phase 1 — GIS Foundation. "
+        "Serves historical landslide event inventory from the NASA Global Landslide "
+        "Catalog (GLC/COOLR) as a read-only GeoJSON API. "
+        "This is NOT a live warning system."
     ),
     lifespan=lifespan,
     docs_url="/docs",
